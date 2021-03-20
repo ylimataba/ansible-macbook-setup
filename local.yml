@@ -1,6 +1,53 @@
 - hosts: localhost
-  tasks:
-  - name: Install cask packages
-    homebrew_cask: name={{ item }} state=present
-    with_items:
+  become: false
+  vars:
+    brew_cask_packages:
+    - bitwarden
+    - docker
     - google-chrome
+    - microsoft-teams
+    - visual-studio-code
+    - virtualbox
+    - virtualbox-extension-pack
+    brew_packages:
+    - git
+
+    
+  tasks:
+  - name: Updating Homebrew
+    homebrew:
+      update_homebrew: true
+    register: result
+
+  - name: Print return information from the previous task
+    ansible.builtin.debug:
+      var: result
+
+  - name: Upgrading Homebrew Packages
+    homebrew:
+      upgrade_all: true
+    register: result
+
+  - name: Print return information from the previous task
+    ansible.builtin.debug:
+      var: result
+
+  - name: Installing Homebrew Cask Packages
+    homebrew_cask:
+      name: "{{ brew_cask_packages }}"
+      state: present
+    register: result
+
+  - name: Print return information from the previous task
+    ansible.builtin.debug:
+      var: result
+
+  - name: Installing Homebrew Packages
+    homebrew:
+      name: "{{ brew_packages }}"
+      state: present
+    register: result
+
+  - name: Print return information from the previous task
+    ansible.builtin.debug:
+      var: result
